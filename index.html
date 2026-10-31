@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fathima Habeeb · Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#05080f;--text:#E6ECF5;--muted:#A9B6CC;--line:rgba(120,160,255,.28);--accent:#4FD1FF;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;display:block}
+#ui{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:calc(24px + env(safe-area-inset-top,0px)) 5vw calc(24px + env(safe-area-inset-bottom,0px))}
+#ui button,#panel{pointer-events:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:.08em;background:none;border:0;color:var(--text);cursor:pointer;min-height:44px;padding:0}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:rgba(8,12,24,.6);backdrop-filter:blur(8px);color:var(--text);font:500 15px 'Inter',sans-serif;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+nav button:hover{border-color:var(--accent);transform:translateY(-2px)}
+nav button[aria-current="true"]{background:var(--accent);color:#04101c;border-color:var(--accent)}
+#hero{transition:opacity .4s,transform .4s;max-width:720px;text-shadow:0 2px 24px #05080f}
+#hero.hide{opacity:0;transform:translateY(12px)}
+#hero h1{margin:0 0 12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(44px,9vw,104px);line-height:1}
+#hero p{margin:0;font-size:18px;color:var(--muted)}
+footer{display:flex;justify-content:space-between;gap:16px;font:13px ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+#status{color:var(--accent)}
+#panel{position:absolute;left:5vw;top:50%;width:min(540px,90vw);max-height:68vh;overflow:auto;padding:28px;border:1px solid var(--line);border-radius:18px;background:rgba(8,12,24,.78);backdrop-filter:blur(14px);opacity:0;transform:translate(-24px,-50%);pointer-events:none;transition:opacity .35s,transform .35s}
+#panel.open{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+#panel h2{margin:0 0 16px;font-family:'Space Grotesk',sans-serif;font-size:28px;color:var(--accent)}
+.item{padding:14px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h3{margin:0 0 4px;font-size:17px}
+.item .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
+.item p,.item li{margin:0;color:var(--muted);line-height:1.55;font-size:15px}
+.item ul{margin:6px 0 0;padding-left:18px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.tags span{padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--text)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.btn{display:inline-flex;align-items:center;min-height:40px;padding:0 18px;border:1px solid var(--accent);border-radius:999px;color:var(--accent);text-decoration:none;font:500 14px 'Inter',sans-serif;transition:background .2s,color .2s}.btn:hover{background:var(--accent);color:#04101c}
+.lbl{margin:16px 0 6px;font:500 12px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}.item b{color:var(--text);font-weight:500}
+#close{position:absolute;top:14px;right:14px;min-width:44px;min-height:44px;border:0;background:none;color:var(--muted);font-size:22px;cursor:pointer}
+@media(max-width:760px){#panel{top:auto;bottom:80px;transform:translate(0,24px);max-height:48vh}#panel.open{transform:none}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="ui">
+<header>
+<button class="brand" id="brand" aria-label="Home">Fathima Habeeb</button>
+<nav id="nav" aria-label="Sections"></nav>
+</header>
+<div id="hero">
+<h1 id="name">Fathima Habeeb</h1>
+<p>Electrical &amp; Electronics Engineer · NIT Calicut</p>
+</div>
+<footer><span>Click a chip on the board, or use the menu</span><span id="status">SYS / HOME</span></footer>
+<section id="panel" aria-live="polite">
+<button id="close" aria-label="Close">×</button>
+<div id="content"></div>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ===== EDIT YOUR DETAILS HERE =====
+var NAME = "Fathima Habeeb";
+var SECTIONS = {
+  projects: {label:"Projects", color:"#8B7CFF", html:
+    '<div class="item"><h3>SnapClass</h3><div class="meta">Dual-modal AI attendance system</div><p>An attendance system that identifies students by both their face and their voice, with separate portals for students and teachers. Built in <b>Python</b> with a <b>Streamlit</b> frontend.</p><div class="lbl">How it works</div><ul><li>Face recognition: facial embeddings are extracted with <b>dlib</b> and an <b>SVM</b> classifier identifies the student.</li><li>Voice recognition: <b>librosa</b> and <b>Resemblyzer</b> identify the student from their voice.</li><li>Portals: students and teachers log in separately, with <b>bcrypt</b>-secured authentication.</li><li>Records: attendance is marked automatically and stored in <b>Supabase</b> with logs. QR codes are supported using <b>segno</b>.</li></ul><div class="btns"><a class="btn" href="https://snap-class-ai-attendance-marker.streamlit.app/" target="_blank" rel="noopener">Live demo</a><a class="btn" href="https://github.com/fathimahabeeb222/snap_class" target="_blank" rel="noopener">Code</a></div></div>'+
+    '<div class="item"><h3>CreditWise</h3><div class="meta">Loan approval prediction</div><p>A machine learning application that predicts whether a loan will be approved, based on the applicant’s financial and demographic details. Built in <b>Python</b> with <b>Pandas</b>, <b>NumPy</b> and <b>Scikit-learn</b>.</p><div class="lbl">How it works</div><ul><li>Data preprocessing, exploratory data analysis (EDA) and feature preparation get the data ready for modelling.</li><li>Three classification algorithms were trained and compared: <b>Logistic Regression</b>, <b>K-Nearest Neighbors (KNN)</b> and <b>Naive Bayes</b>.</li><li>Logistic Regression outperformed the other two.</li><li>An interactive <b>Streamlit</b> app lets users enter applicant details and get a loan approval prediction.</li></ul><div class="lbl">Results (Logistic Regression)</div><div class="tags"><span>Accuracy 87.5%</span><span>Precision 0.79</span><span>Recall 0.80</span><span>F1 score 0.80</span></div><div class="btns"><a class="btn" href="https://creditwise-loan-prediction-222.streamlit.app/" target="_blank" rel="noopener">Live demo</a><a class="btn" href="https://github.com/fathimahabeeb222/CreditWise-Loan-Prediction" target="_blank" rel="noopener">Code</a></div></div>'},
+  experience: {label:"Experience", color:"#FFB86B", html:
+    '<div class="item"><h3>Assistant Manager (Shift Engineer), Industrial Automation</h3><div class="meta">ArcelorMittal Nippon Steel India · EIA Department · Jul 2024 – Mar 2026</div><p><b>Blast Furnace-2 · Projects / OIG</b></p><p style="font-style:italic">Part of the project team for a new greenfield blast furnace plant during its commissioning phase.</p><ul><li>Developed a multi-KPI <b>Tableau</b> dashboard that consolidated project progress across 11 plant areas and their sub-areas, giving management a clear view to track progress and communicate updates.</li><li>Contributed to <b>PLC/SCADA</b> code development and maintenance for automation equipment through the in-house MatCo-GeN platform.</li><li>Created and maintained the Automation Master List, Spare List and Training Modules, and reviewed technical documentation from multiple vendors for CPU, RIO and network panels.</li><li>Worked with the Electrical, Mechanical and EIA teams to collect, validate and regularly update project activity and equipment data across plant areas.</li><li>Carried out routine site visits and prepared technical progress reports on site updates, equipment condition and project status.</li><li>Built a strong technical understanding of computer networking through hands-on work with automation and network panels.</li><li>Gained hands-on operational experience on a running plant as a shift engineer.</li></ul></div>'},
+  education: {label:"Education", color:"#6BFFB0", html:
+    '<div class="item"><h3>B.Tech, Electrical and Electronics Engineering</h3><div class="meta">NIT Calicut · 2020 – 2024 · CGPA 8.4 / 10</div></div>'+
+    '<div class="item"><h3>Higher Secondary (Class 12), Science Group (PCMC)</h3><div class="meta">Government Model Higher Secondary School, Mananchira, Calicut · 2020 · 98.4%</div></div>'+
+    '<div class="item"><h3>Courses and certificates</h3><ul><li>Supervised Machine Learning: Regression and Classification · DeepLearning.AI</li><li>Advanced Learning Algorithms · DeepLearning.AI</li><li>Google Data Analytics Professional Certificate · Google, Coursera</li><li>Crash Course on Python · Google, Coursera</li></ul></div>'},
+  skills: {label:"Skills", color:"#FF7AC6", html:
+    '<div class="item"><div class="lbl" style="margin-top:0">Programming languages</div><div class="tags"><span>Python</span><span>C++</span><span>SQL</span></div><div class="lbl">Machine learning and data</div><div class="tags"><span>Machine Learning</span><span>Deep Learning</span><span>Scikit-learn</span><span>Pandas</span><span>NumPy</span><span>Matplotlib</span><span>Seaborn</span></div><div class="lbl">Tools</div><div class="tags"><span>Tableau</span><span>Power BI</span><span>Excel</span><span>PowerPoint</span></div><div class="lbl">Industrial</div><div class="tags"><span>Industrial Automation</span><span>PLC / SCADA</span><span>Computer Networking</span></div></div>'},
+  activities: {label:"Activities", color:"#FFD166", html:
+    '<div class="item"><h3>Workshop Committee Head</h3><div class="meta">Tathva · 2023</div><p>Directed cross-functional coordination and volunteer management to run workshops attracting 300+ attendees.</p></div>'+
+    '<div class="item"><h3>Public Relations Committee Senior Executive</h3><div class="meta">Ragam · 2022</div><p>Managed PR activities by coordinating with sponsors, participants and external partners to improve event visibility and engagement.</p></div>'},
+  contact: {label:"Contact", color:"#4FD1FF", html:
+    '<div class="item"><p><a href="mailto:fathimahabeeb222@gmail.com" style="color:var(--accent)">fathimahabeeb222@gmail.com</a></p></div><div class="item"><p><a href="https://github.com/fathimahabeeb222" target="_blank" rel="noopener" style="color:var(--accent)">github.com/fathimahabeeb222</a></p></div><div class="item"><p><a href="https://www.linkedin.com/in/fathima-habeeb-11747423b/" target="_blank" rel="noopener" style="color:var(--accent)">linkedin.com/in/fathima-habeeb</a></p></div>'}
+};
+// ==================================
+document.getElementById('name').textContent = NAME;
+document.querySelector('.brand').textContent = 'Home';
+var nav = document.getElementById('nav'), panel = document.getElementById('panel'),
+    content = document.getElementById('content'), hero = document.getElementById('hero'),
+    statusEl = document.getElementById('status'), current = null;
+
+Object.keys(SECTIONS).forEach(function(k){
+  var b = document.createElement('button'); b.textContent = SECTIONS[k].label; b.dataset.k = k;
+  b.addEventListener('click', function(){ show(k); }); nav.appendChild(b);
+});
+function show(k){
+  current = k;
+  if(k){
+    content.innerHTML = '<h2>'+SECTIONS[k].label+'</h2>'+SECTIONS[k].html;
+    panel.classList.add('open'); hero.classList.add('hide');
+    document.documentElement.style.setProperty('--accent', SECTIONS[k].color);
+    statusEl.textContent = 'SYS / ' + SECTIONS[k].label.toUpperCase();
+  } else {
+    panel.classList.remove('open'); hero.classList.remove('hide');
+    document.documentElement.style.setProperty('--accent', '#4FD1FF');
+    statusEl.textContent = 'SYS / HOME';
+  }
+  Array.prototype.forEach.call(nav.children, function(b){ b.setAttribute('aria-current', b.dataset.k === k ? 'true' : 'false'); });
+}
+document.getElementById('close').addEventListener('click', function(){ show(null); });
+document.getElementById('brand').addEventListener('click', function(){ show(null); });
+
+// ===== 3D circuit board =====
+try {
+  var canvas = document.getElementById('bg');
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.setClearColor(0x05080f, 1);
+  var scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x05080f, 20, 48);
+  var camera = new THREE.PerspectiveCamera(50, 1, .1, 100);
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var board = new THREE.Mesh(new THREE.PlaneGeometry(60,44), new THREE.MeshBasicMaterial({color:0x070d1c}));
+  board.rotation.x = -Math.PI/2; board.position.y = -.05; scene.add(board);
+  var grid = new THREE.GridHelper(60, 60, 0x16224a, 0x0c1530); grid.position.y = -.04; scene.add(grid);
+
+  // decorative traces
+  var dp = [];
+  for(var i=0;i<46;i++){
+    var x0 = Math.round((Math.random()*44-22)), z0 = Math.round((Math.random()*30-12)), len = 2+Math.round(Math.random()*7), horiz = Math.random()<.5;
+    var x1 = horiz ? x0+len : x0, z1 = horiz ? z0 : z0+len, x2 = horiz ? x1 : x1+len, z2 = horiz ? z1+len : z1;
+    dp.push(x0,.01,z0, x1,.01,z1, x1,.01,z1, x2,.01,z2);
+  }
+  var dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(dp),3));
+  scene.add(new THREE.LineSegments(dg, new THREE.LineBasicMaterial({color:0x1c2b55})));
+
+  function label(text, color, size){
+    var c = document.createElement('canvas'); c.width = 512; c.height = 128;
+    var g = c.getContext('2d'); g.font = '700 '+size+'px "Space Grotesk",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = color; g.fillText(text, 256, 64);
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthWrite:false}));
+    s.scale.set(4.4,1.1,1); return s;
+  }
+  var DEF = [
+    {key:null, text:'', x:0, z:0, w:3.4, color:'#4FD1FF', size:46},
+    {key:'projects', x:-8, z:-4, w:2.8, zo:-.5},
+    {key:'experience', x:8, z:-4, w:2.8, zo:-.15},
+    {key:'education', x:-8, z:5, w:2.8, zo:.2},
+    {key:'skills', x:8, z:5, w:2.8, zo:.55},
+    {key:'activities', x:0, z:-9, w:2.8},
+    {key:'contact', x:0, z:10, w:2.8}
+  ];
+  var chips = [], pickables = [], paths = [], pulses = [];
+  DEF.forEach(function(d){
+    var col = d.key ? SECTIONS[d.key].color : d.color, txt = d.key ? SECTIONS[d.key].label : d.text, h = .45;
+    var g = new THREE.Group(); g.position.set(d.x, 0, d.z);
+    var box = new THREE.Mesh(new THREE.BoxGeometry(d.w,h,d.w), new THREE.MeshBasicMaterial({color:0x0a1226}));
+    box.position.y = h/2; box.userData.key = d.key; box.userData.core = !d.key; g.add(box);
+    var edges = new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineBasicMaterial({color:col}));
+    edges.position.y = h/2; g.add(edges);
+    var glow = new THREE.Mesh(new THREE.PlaneGeometry(d.w*.8,d.w*.8), new THREE.MeshBasicMaterial({color:col, transparent:true, opacity:.12}));
+    glow.rotation.x = -Math.PI/2; glow.position.y = h+.01; g.add(glow);
+    for(var p=-2;p<=2;p++){ [-1,1].forEach(function(sd){
+      var pin = new THREE.Mesh(new THREE.BoxGeometry(.14,.1,.4), new THREE.MeshBasicMaterial({color:col}));
+      pin.position.set(p*d.w*.2, .06, sd*(d.w/2+.15)); g.add(pin); }); }
+    var lb = label(txt, col, d.size||52); lb.position.set(0, 1.5, 0); g.add(lb);
+    scene.add(g); pickables.push(box);
+    chips.push({key:d.key, glow:glow, pos:g.position, col:col});
+    if(d.key){
+      var zo = d.zo||0, pts = d.x === 0 ? [[0,0],[0,d.z]] : [[0,zo],[d.x,zo],[d.x,d.z]];
+      var v = pts.map(function(q){ return new THREE.Vector3(q[0],.03,q[1]); });
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(v), new THREE.LineBasicMaterial({color:col})));
+      var cum = [0]; for(var j=1;j<v.length;j++) cum.push(cum[j-1]+v[j].distanceTo(v[j-1]));
+      for(var n=0;n<2;n++){
+        var m = new THREE.Mesh(new THREE.SphereGeometry(.14,10,10), new THREE.MeshBasicMaterial({color:col})); scene.add(m);
+        pulses.push({m:m, v:v, cum:cum, phase:n*.5});
+      }
+    }
+  });
+  function pointAt(pl, d){
+    var L = pl.cum[pl.cum.length-1]; d = ((d % L) + L) % L;
+    for(var i=1;i<pl.cum.length;i++){ if(d <= pl.cum[i]){ var t = (d-pl.cum[i-1])/(pl.cum[i]-pl.cum[i-1]); return pl.v[i-1].clone().lerp(pl.v[i], t); } }
+    return pl.v[pl.v.length-1];
+  }
+
+  var ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), mx = 0, my = 0, hover = null;
+  function setMouse(e){ mx = e.clientX/innerWidth*2-1; my = e.clientY/innerHeight*2-1; mouse.set(mx, -my); }
+  function pick(){ ray.setFromCamera(mouse, camera); var h = ray.intersectObjects(pickables)[0]; return h ? h.object : null; }
+  window.addEventListener('pointermove', function(e){
+    setMouse(e); var o = pick(); hover = o ? (o.userData.core ? 'core' : o.userData.key) : null;
+    canvas.style.cursor = hover ? 'pointer' : 'default';
+  });
+  canvas.addEventListener('click', function(e){ setMouse(e); var o = pick(); if(o) show(o.userData.core ? null : o.userData.key); });
+  var viewX = 0;
+  function resize(){ renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); }
+  window.addEventListener('resize', resize); resize();
+
+  var goalPos = new THREE.Vector3(), goalLook = new THREE.Vector3(), look = new THREE.Vector3(0,0,2);
+  camera.position.set(0,14,18);
+  var clock = new THREE.Clock();
+  function tick(){
+    requestAnimationFrame(tick);
+    var t = clock.getElapsedTime(), wide = innerWidth > 760, cp = null;
+    chips.forEach(function(c){ if(c.key === current) cp = c; });
+    if(cp){ goalPos.set(cp.pos.x, 5.2, cp.pos.z+6.8); goalLook.copy(cp.pos); }
+    else { var sw = calm ? 0 : Math.sin(t*.25)*2; goalPos.set(mx*3+sw, 13.5-my*1.5, 17); goalLook.set(0,0,2.5); }
+    camera.position.lerp(goalPos, .045); look.lerp(goalLook, .06); camera.lookAt(look);
+    var vg = (cp && wide) ? -innerWidth*.2 : 0; viewX += (vg-viewX)*.07;
+    camera.setViewOffset(innerWidth, innerHeight, viewX, 0, innerWidth, innerHeight);
+    chips.forEach(function(c){
+      var on = (c.key === current && c.key) ? .6 : ((hover === (c.key||'core')) ? .42 : .12);
+      c.glow.material.opacity += (on - c.glow.material.opacity)*.15;
+    });
+    pulses.forEach(function(p){ if(!calm){ p.m.position.copy(pointAt(p, t*3 + p.phase*(p.cum[p.cum.length-1]))); } });
+    renderer.render(scene, camera);
+  }
+  tick();
+} catch(e) { /* WebGL unavailable: page content still works */ }
+</script>
+</body>
+</html>
